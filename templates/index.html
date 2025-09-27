@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Intelligence - AI-Powered Fundraising Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-item:hover {
+            background-color: #F3F4F6;
+        }
+        .nav-item.active {
+            background-color: #EBF8FF;
+            border-right: 3px solid #3B82F6;
+            color: #1E40AF;
+        }
+        .nav-badge {
+            font-size: 0.75rem;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50">
+        <!-- Logo -->
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">D</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Donor</h1>
+                    <p class="text-sm text-gray-600">Intelligence</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="mt-6">
+            <button onclick="showSection('today')" class="nav-item active w-full flex items-center justify-between px-6 py-3 text-left">
+                <div class="flex items-center space-x-3">
+                    <span class="text-green-600">📅</span>
+                    <span>Today</span>
+                </div>
+                <span class="nav-badge bg-green-100 text-green-800 rounded-full" id="today-count">3</span>
+            </button>
+            
+            <button onclick="showSection('contacts')" class="nav-item w-full flex items-center justify-between px-6 py-3 text-left">
+                <div class="flex items-center space-x-3">
+                    <span class="text-blue-600">👥</span>
+                    <span>Contacts</span>
+                </div>
+                <span class="nav-badge bg-blue-100 text-blue-800 rounded-full" id="contacts-count">0</span>
+            </button>
+            
+            <button onclick="showSection('tasks')" class="nav-item w-full flex items-center justify-between px-6 py-3 text-left">
+                <div class="flex items-center space-x-3">
+                    <span class="text-yellow-600">📋</span>
+                    <span>Tasks</span>
+                </div>
+                <span class="nav-badge bg-yellow-100 text-yellow-800 rounded-full" id="tasks-count">0</span>
+            </button>
+            
+            <button onclick="showSection('analytics')" class="nav-item w-full flex items-center justify-between px-6 py-3 text-left">
+                <div class="flex items-center space-x-3">
+                    <span class="text-purple-600">📊</span>
+                    <span>Analytics</span>
+                </div>
+                <span class="nav-badge bg-purple-100 text-purple-800 rounded-full" id="analytics-count">4</span>
+            </button>
+            
+            <button onclick="showSection('campaigns')" class="nav-item w-full flex items-center justify-between px-6 py-3 text-left">
+                <div class="flex items-center space-x-3">
+                    <span class="text-teal-600">📧</span>
+                    <span>Campaigns</span>
+                </div>
+                <span class="nav-badge bg-teal-100 text-teal-800 rounded-full" id="campaigns-count">0</span>
+            </button>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                    <span class="text-white text-sm font-medium">U</span>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900">Fundraiser</p>
+                    <p class="text-xs text-gray-500">Donor Intelligence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" id="page-title">Today's Dashboard</h1>
+                    <p class="text-gray-600" id="page-subtitle">AI-Powered Fundraising Intelligence</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <input type="text" placeholder="Search..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button onclick="showAddModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Add New
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <main class="p-6">
+            <!-- Today Section -->
+            <div id="today-section" class="section">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Contacts</p>
+                                <p class="text-2xl font-bold text-gray-900" id="total-contacts">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 text-xl">👥</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Tasks</p>
+                                <p class="text-2xl font-bold text-gray-900" id="active-tasks">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <span class="text-yellow-600 text-xl">📋</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Donations</p>
+                                <p class="text-2xl font-bold text-gray-900">$0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <span class="text-green-600 text-xl">💰</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Active Campaigns</p>
+                                <p class="text-2xl font-bold text-gray-900" id="active-campaigns">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <span class="text-purple-600 text-xl">📧</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center py-12">
+                            <p class="text-gray-500">No recent activity. Start by adding contacts or tasks!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Section -->
+            <div id="contacts-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Contact Management</h2>
+                        <button onclick="showAddContactModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Add Contact
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div id="contacts-list" class="text-center py-12">
+                            <p class="text-gray-500">No contacts yet. Add your first contact to get started!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasks-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Task Management</h2>
+                        <button onclick="showAddTaskModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Add Task
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div id="tasks-list" class="text-center py-12">
+                            <p class="text-gray-500">No tasks yet. Add your first task to get started!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900">Analytics Dashboard</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="text-center p-6 bg-gray-50 rounded-lg">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Donation Trends</h3>
+                                <p class="text-gray-600">Coming soon...</p>
+                            </div>
+                            <div class="text-center p-6 bg-gray-50 rounded-lg">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Donor Segments</h3>
+                                <p class="text-gray-600">Coming soon...</p>
+                            </div>
+                            <div class="text-center p-6 bg-gray-50 rounded-lg">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Campaign Performance</h3>
+                                <p class="text-gray-600">Coming soon...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaigns Section -->
+            <div id="campaigns-section" class="section hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Campaign Management</h2>
+                        <button onclick="showAddCampaignModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Create Campaign
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div id="campaigns-list" class="text-center py-12">
+                            <p class="text-gray-500">No campaigns yet. Create your first campaign to get started!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div id="add-contact-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Contact</h3>
+                </div>
+                <form id="add-contact-form" class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                        <input type="text" id="contact-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="contact-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                        <select id="contact-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="donor">Donor</option>
+                            <option value="prospect">Prospect</option>
+                            <option value="volunteer">Volunteer</option>
+                            <option value="board">Board Member</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="hideAddContactModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Add Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Task</h3>
+                </div>
+                <form id="add-task-form" class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <input type="text" id="task-title" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="task-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                        <select id="task-priority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="hideAddTaskModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let contacts = [];
+        let tasks = [];
+        let campaigns = [];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            showSection('today');
+        });
+
+        // Navigation functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'today': 'Today\'s Dashboard',
+                'contacts': 'Contact Management',
+                'tasks': 'Task Management',
+                'analytics': 'Analytics Dashboard',
+                'campaigns': 'Campaign Management'
+            };
+            
+            const subtitles = {
+                'today': 'AI-Powered Fundraising Intelligence',
+                'contacts': 'Manage your donors and prospects',
+                'tasks': 'Track fundraising activities and follow-ups',
+                'analytics': 'Real-time insights and performance metrics',
+                'campaigns': 'Email campaigns and engagement tracking'
+            };
+            
+            document.getElementById('page-title').textContent = titles[sectionName];
+            document.getElementById('page-subtitle').textContent = subtitles[sectionName];
+        }
+
+        // Modal functions
+        function showAddModal() {
+            const activeSection = document.querySelector('.section:not(.hidden)').id;
+            if (activeSection === 'contacts-section') {
+                showAddContactModal();
+            } else if (activeSection === 'tasks-section') {
+                showAddTaskModal();
+            } else if (activeSection === 'campaigns-section') {
+                showAddCampaignModal();
+            }
+        }
+
+        function showAddContactModal() {
+            document.getElementById('add-contact-modal').classList.remove('hidden');
+        }
+
+        function hideAddContactModal() {
+            document.getElementById('add-contact-modal').classList.add('hidden');
+            document.getElementById('add-contact-form').reset();
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('add-task-modal').classList.remove('hidden');
+        }
+
+        function hideAddTaskModal() {
+            document.getElementById('add-task-modal').classList.add('hidden');
+            document.getElementById('add-task-form').reset();
+        }
+
+        function showAddCampaignModal() {
+            alert('Campaign creation coming soon!');
+        }
+
+        // API functions
+        async function loadData() {
+            try {
+                // Load contacts
+                const contactsResponse = await fetch('/api/contacts');
+                if (contactsResponse.ok) {
+                    contacts = await contactsResponse.json();
+                    updateContactsDisplay();
+                }
+
+                // Load tasks
+                const tasksResponse = await fetch('/api/tasks');
+                if (tasksResponse.ok) {
+                    tasks = await tasksResponse.json();
+                    updateTasksDisplay();
+                }
+
+                updateDashboard();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        async function addContact(contactData) {
+            try {
+                const response = await fetch('/api/contacts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(contactData)
+                });
+
+                if (response.ok) {
+                    const newContact = await response.json();
+                    contacts.push(newContact);
+                    updateContactsDisplay();
+                    updateDashboard();
+                    hideAddContactModal();
+                } else {
+                    alert('Error adding contact');
+                }
+            } catch (error) {
+                console.error('Error adding contact:', error);
+                alert('Error adding contact');
+            }
+        }
+
+        async function addTask(taskData) {
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const newTask = await response.json();
+                    tasks.push(newTask);
+                    updateTasksDisplay();
+                    updateDashboard();
+                    hideAddTaskModal();
+                } else {
+                    alert('Error adding task');
+                }
+            } catch (error) {
+                console.error('Error adding task:', error);
+                alert('Error adding task');
+            }
+        }
+
+        // Display update functions
+        function updateDashboard() {
+            document.getElementById('total-contacts').textContent = contacts.length;
+            document.getElementById('active-tasks').textContent = tasks.length;
+            document.getElementById('active-campaigns').textContent = campaigns.length;
+            
+            document.getElementById('contacts-count').textContent = contacts.length;
+            document.getElementById('tasks-count').textContent = tasks.length;
+            document.getElementById('campaigns-count').textContent = campaigns.length;
+        }
+
+        function updateContactsDisplay() {
+            const contactsList = document.getElementById('contacts-list');
+            
+            if (contacts.length === 0) {
+                contactsList.innerHTML = '<div class="text-center py-12"><p class="text-gray-500">No contacts yet. Add your first contact to get started!</p></div>';
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            contacts.forEach(contact => {
+                html += `
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-blue-600 font-medium">${contact.name.charAt(0)}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">${contact.name}</h3>
+                                <p class="text-sm text-gray-600">${contact.email}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">${contact.type}</span>
+                            <span class="text-sm text-gray-500">${contact.created_at}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            contactsList.innerHTML = html;
+        }
+
+        function updateTasksDisplay() {
+            const tasksList = document.getElementById('tasks-list');
+            
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<div class="text-center py-12"><p class="text-gray-500">No tasks yet. Add your first task to get started!</p></div>';
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            tasks.forEach(task => {
+                const priorityColors = {
+                    'low': 'bg-green-100 text-green-800',
+                    'medium': 'bg-yellow-100 text-yellow-800',
+                    'high': 'bg-red-100 text-red-800'
+                };
+                
+                html += `
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-medium text-gray-900">${task.title}</h3>
+                            <span class="px-2 py-1 text-xs font-medium ${priorityColors[task.priority]} rounded-full">${task.priority}</span>
+                        </div>
+                        ${task.description ? `<p class="text-sm text-gray-600 mb-2">${task.description}</p>` : ''}
+                        <p class="text-xs text-gray-500">${task.created_at}</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            tasksList.innerHTML = html;
+        }
+
+        // Form event listeners
+        document.getElementById('add-contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const contactData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                type: document.getElementById('contact-type').value
+            };
+            
+            addContact(contactData);
+        });
+
+        document.getElementById('add-task-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const taskData = {
+                title: document.getElementById('task-title').value,
+                description: document.getElementById('task-description').value,
+                priority: document.getElementById('task-priority').value
+            };
+            
+            addTask(taskData);
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
+                hideAddContactModal();
+                hideAddTaskModal();
+            }
+        });
+    </script>
+</body>
+</html>
