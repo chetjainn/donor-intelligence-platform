@@ -269,6 +269,34 @@ def index():
 def test():
     return jsonify({'message': 'Flask app is working!', 'timestamp': datetime.now().isoformat()})
 
+# Dashboard endpoint (main endpoint that frontend calls)
+@app.route('/api/dashboard', methods=['GET'])
+def get_dashboard():
+    total_donations = sum(contact['total_donated'] for contact in contacts)
+    total_donors = len([c for c in contacts if c['total_donated'] > 0])
+    avg_donation = total_donations / total_donors if total_donors > 0 else 0
+    
+    active_campaigns = len([c for c in campaigns if c['status'] == 'active'])
+    total_campaign_revenue = sum(campaign['revenue'] for campaign in campaigns)
+    
+    pending_tasks = len([t for t in tasks if t['status'] == 'pending'])
+    high_priority_tasks = len([t for t in tasks if t['priority'] == 'high'])
+    
+    return jsonify({
+        'total_contacts': len(contacts),
+        'total_donors': total_donors,
+        'total_donations': total_donations,
+        'average_donation': avg_donation,
+        'active_campaigns': active_campaigns,
+        'campaign_revenue': total_campaign_revenue,
+        'pending_tasks': pending_tasks,
+        'high_priority_tasks': high_priority_tasks,
+        'total_grants': len(grants),
+        'grant_value': sum(grant['amount'] for grant in grants),
+        'upcoming_events': len([e for e in events if e['status'] == 'active']),
+        'event_registrations': sum(event['registered'] for event in events)
+    })
+
 @app.route('/api/contacts', methods=['GET', 'POST'])
 def handle_contacts():
     if request.method == 'GET':
@@ -413,6 +441,18 @@ def get_dashboard_analytics():
     pending_tasks = len([t for t in tasks if t['status'] == 'pending'])
     high_priority_tasks = len([t for t in tasks if t['priority'] == 'high'])
     
+    # Generate sample trend data
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+    donation_trends = [1200, 1500, 1800, 2100, 1900, 2300, 2600, 2200, 2800]
+    
+    # Donor segments
+    donor_segments = [
+        {'segment': 'Major Donors', 'count': 12, 'total': 45000},
+        {'segment': 'Regular Donors', 'count': 45, 'total': 18500},
+        {'segment': 'New Donors', 'count': 23, 'total': 5200},
+        {'segment': 'Lapsed Donors', 'count': 18, 'total': 0}
+    ]
+    
     return jsonify({
         'total_contacts': len(contacts),
         'total_donors': total_donors,
@@ -425,7 +465,10 @@ def get_dashboard_analytics():
         'total_grants': len(grants),
         'grant_value': sum(grant['amount'] for grant in grants),
         'upcoming_events': len([e for e in events if e['status'] == 'active']),
-        'event_registrations': sum(event['registered'] for event in events)
+        'event_registrations': sum(event['registered'] for event in events),
+        'donation_trends': donation_trends,
+        'donor_segments': donor_segments,
+        'retention_rate': 78.5
     })
 
 @app.route('/api/analytics/trends', methods=['GET'])
@@ -483,175 +526,6 @@ def ai_draft_email():
             'Add recent program impact story',
             'Include clear call-to-action'
         ]
-    })
-
-# Sample data for new features
-grants = [
-    {
-        'id': 1,
-        'foundation': 'Gates Foundation',
-        'program': 'Education Initiative',
-        'amount': 50000,
-        'status': 'in_progress',
-        'deadline': '2024-12-15',
-        'probability': 75,
-        'submitted_date': '2024-09-01'
-    },
-    {
-        'id': 2,
-        'foundation': 'Ford Foundation',
-        'program': 'Community Development',
-        'amount': 25000,
-        'status': 'awarded',
-        'deadline': '2024-10-30',
-        'probability': 100,
-        'submitted_date': '2024-08-15'
-    },
-    {
-        'id': 3,
-        'foundation': 'Rockefeller Foundation',
-        'program': 'Health & Wellness',
-        'amount': 75000,
-        'status': 'draft',
-        'deadline': '2025-01-31',
-        'probability': 60,
-        'submitted_date': None
-    }
-]
-
-events = [
-    {
-        'id': 1,
-        'name': 'Annual Gala',
-        'date': '2024-11-15',
-        'time': '6:00 PM',
-        'venue': 'Grand Ballroom',
-        'capacity': 200,
-        'registered': 150,
-        'revenue_goal': 100000,
-        'current_revenue': 75000,
-        'status': 'active'
-    },
-    {
-        'id': 2,
-        'name': 'Community Walk',
-        'date': '2024-10-20',
-        'time': '9:00 AM',
-        'venue': 'City Park',
-        'capacity': 500,
-        'registered': 320,
-        'revenue_goal': 25000,
-        'current_revenue': 18500,
-        'status': 'active'
-    },
-    {
-        'id': 3,
-        'name': 'Silent Auction',
-        'date': '2024-12-05',
-        'time': '7:00 PM',
-        'venue': 'Community Center',
-        'capacity': 100,
-        'registered': 45,
-        'revenue_goal': 15000,
-        'current_revenue': 8200,
-        'status': 'planning'
-    }
-]
-
-wealth_screenings = [
-    {
-        'id': 1,
-        'contact_name': 'Robert Williams',
-        'estimated_capacity': 100000,
-        'recommended_ask': 25000,
-        'confidence_level': 'high',
-        'interests': ['Education', 'Healthcare'],
-        'next_steps': 'Schedule in-person meeting',
-        'screening_date': '2024-09-15'
-    },
-    {
-        'id': 2,
-        'contact_name': 'Jennifer Davis',
-        'estimated_capacity': 50000,
-        'recommended_ask': 10000,
-        'confidence_level': 'medium',
-        'interests': ['Environment', 'Arts'],
-        'next_steps': 'Send program information',
-        'screening_date': '2024-09-20'
-    }
-]
-
-# API endpoints for new features
-@app.route('/api/grants', methods=['GET'])
-def get_grants():
-    return jsonify(grants)
-
-@app.route('/api/grants', methods=['POST'])
-def add_grant():
-    data = request.get_json()
-    new_grant = {
-        'id': len(grants) + 1,
-        'foundation': data.get('foundation'),
-        'program': data.get('program'),
-        'amount': data.get('amount'),
-        'status': data.get('status', 'draft'),
-        'deadline': data.get('deadline'),
-        'probability': data.get('probability', 50),
-        'submitted_date': datetime.now().strftime('%Y-%m-%d')
-    }
-    grants.append(new_grant)
-    return jsonify(new_grant), 201
-
-@app.route('/api/events', methods=['GET'])
-def get_events():
-    return jsonify(events)
-
-@app.route('/api/events', methods=['POST'])
-def add_event():
-    data = request.get_json()
-    new_event = {
-        'id': len(events) + 1,
-        'name': data.get('name'),
-        'date': data.get('date'),
-        'time': data.get('time', '6:00 PM'),
-        'venue': data.get('venue'),
-        'capacity': data.get('capacity', 100),
-        'registered': 0,
-        'revenue_goal': data.get('revenue_goal', 10000),
-        'current_revenue': 0,
-        'status': 'planning'
-    }
-    events.append(new_event)
-    return jsonify(new_event), 201
-
-@app.route('/api/wealth-screenings', methods=['GET'])
-def get_wealth_screenings():
-    return jsonify(wealth_screenings)
-
-@app.route('/api/wealth-screenings', methods=['POST'])
-def add_wealth_screening():
-    data = request.get_json()
-    new_screening = {
-        'id': len(wealth_screenings) + 1,
-        'contact_name': data.get('contact_name'),
-        'estimated_capacity': data.get('estimated_capacity'),
-        'recommended_ask': data.get('recommended_ask'),
-        'confidence_level': data.get('confidence_level', 'medium'),
-        'interests': data.get('interests', []),
-        'next_steps': data.get('next_steps'),
-        'screening_date': datetime.now().strftime('%Y-%m-%d')
-    }
-    wealth_screenings.append(new_screening)
-    return jsonify(new_screening), 201
-
-# Bulk upload endpoint
-@app.route('/api/bulk-upload', methods=['POST'])
-def bulk_upload():
-    # This would handle CSV/Excel file uploads in a real application
-    return jsonify({
-        'message': 'Bulk upload functionality ready',
-        'supported_formats': ['CSV', 'Excel'],
-        'supported_types': ['contacts', 'donations', 'events']
     })
 
 # Settings endpoint
