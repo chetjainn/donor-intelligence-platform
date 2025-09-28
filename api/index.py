@@ -7,7 +7,19 @@ app = Flask(__name__, template_folder='../templates')
 CORS(app)
 
 # Sample data storage (in production, use a proper database)
-contacts = [
+contacts = []
+tasks = []
+campaigns = []
+grants = []
+events = []
+wealth_screenings = []
+
+# Initialize sample data function
+def initialize_sample_data():
+    global contacts, tasks, campaigns, grants, events, wealth_screenings
+    
+    if len(contacts) == 0:  # Only initialize if empty
+        contacts.extend([
     {
         'id': 1,
         'name': 'Sarah Johnson',
@@ -258,7 +270,10 @@ wealth_screenings = [
         'next_steps': 'Invite to major donor event',
         'screened_date': '2024-09-18'
     }
-]
+        ])
+
+# Call initialization function
+initialize_sample_data()
 
 # Routes
 @app.route('/')
@@ -272,6 +287,7 @@ def test():
 # Dashboard endpoint (main endpoint that frontend calls)
 @app.route('/api/dashboard', methods=['GET'])
 def get_dashboard():
+    initialize_sample_data()  # Ensure data is available
     total_donations = sum(contact['total_donated'] for contact in contacts)
     total_donors = len([c for c in contacts if c['total_donated'] > 0])
     avg_donation = total_donations / total_donors if total_donors > 0 else 0
@@ -299,6 +315,7 @@ def get_dashboard():
 
 @app.route('/api/contacts', methods=['GET', 'POST'])
 def handle_contacts():
+    initialize_sample_data()  # Ensure data is available
     if request.method == 'GET':
         return jsonify(contacts)
     
@@ -320,6 +337,7 @@ def handle_contacts():
 
 @app.route('/api/tasks', methods=['GET', 'POST'])
 def handle_tasks():
+    initialize_sample_data()  # Ensure data is available
     if request.method == 'GET':
         return jsonify(tasks)
     
@@ -340,6 +358,7 @@ def handle_tasks():
 
 @app.route('/api/campaigns', methods=['GET', 'POST'])
 def handle_campaigns():
+    initialize_sample_data()  # Ensure data is available
     if request.method == 'GET':
         return jsonify(campaigns)
     
