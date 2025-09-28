@@ -2,26 +2,26 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/app.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/app.py"
     },
     {
       "src": "/test",
-      "dest": "api/index.py"
+      "dest": "api/app.py"
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/app.py"
     }
   ],
   "functions": {
-    "api/index.py": {
+    "api/app.py": {
       "maxDuration": 30
     }
   }
