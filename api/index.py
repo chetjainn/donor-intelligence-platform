@@ -674,5 +674,8 @@ def update_settings():
         'settings': data
     })
 
+# Export the Flask app for Vercel
+application = app
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
