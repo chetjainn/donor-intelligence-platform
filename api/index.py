@@ -3,7 +3,7 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 import random
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates')
 CORS(app)
 
 # Sample data storage (in production, use a proper database)
@@ -479,6 +479,195 @@ def ai_draft_email():
             'Add recent program impact story',
             'Include clear call-to-action'
         ]
+    })
+
+# Sample data for new features
+grants = [
+    {
+        'id': 1,
+        'foundation': 'Gates Foundation',
+        'program': 'Education Initiative',
+        'amount': 50000,
+        'status': 'in_progress',
+        'deadline': '2024-12-15',
+        'probability': 75,
+        'submitted_date': '2024-09-01'
+    },
+    {
+        'id': 2,
+        'foundation': 'Ford Foundation',
+        'program': 'Community Development',
+        'amount': 25000,
+        'status': 'awarded',
+        'deadline': '2024-10-30',
+        'probability': 100,
+        'submitted_date': '2024-08-15'
+    },
+    {
+        'id': 3,
+        'foundation': 'Rockefeller Foundation',
+        'program': 'Health & Wellness',
+        'amount': 75000,
+        'status': 'draft',
+        'deadline': '2025-01-31',
+        'probability': 60,
+        'submitted_date': None
+    }
+]
+
+events = [
+    {
+        'id': 1,
+        'name': 'Annual Gala',
+        'date': '2024-11-15',
+        'time': '6:00 PM',
+        'venue': 'Grand Ballroom',
+        'capacity': 200,
+        'registered': 150,
+        'revenue_goal': 100000,
+        'current_revenue': 75000,
+        'status': 'active'
+    },
+    {
+        'id': 2,
+        'name': 'Community Walk',
+        'date': '2024-10-20',
+        'time': '9:00 AM',
+        'venue': 'City Park',
+        'capacity': 500,
+        'registered': 320,
+        'revenue_goal': 25000,
+        'current_revenue': 18500,
+        'status': 'active'
+    },
+    {
+        'id': 3,
+        'name': 'Silent Auction',
+        'date': '2024-12-05',
+        'time': '7:00 PM',
+        'venue': 'Community Center',
+        'capacity': 100,
+        'registered': 45,
+        'revenue_goal': 15000,
+        'current_revenue': 8200,
+        'status': 'planning'
+    }
+]
+
+wealth_screenings = [
+    {
+        'id': 1,
+        'contact_name': 'Robert Williams',
+        'estimated_capacity': 100000,
+        'recommended_ask': 25000,
+        'confidence_level': 'high',
+        'interests': ['Education', 'Healthcare'],
+        'next_steps': 'Schedule in-person meeting',
+        'screening_date': '2024-09-15'
+    },
+    {
+        'id': 2,
+        'contact_name': 'Jennifer Davis',
+        'estimated_capacity': 50000,
+        'recommended_ask': 10000,
+        'confidence_level': 'medium',
+        'interests': ['Environment', 'Arts'],
+        'next_steps': 'Send program information',
+        'screening_date': '2024-09-20'
+    }
+]
+
+# API endpoints for new features
+@app.route('/api/grants', methods=['GET'])
+def get_grants():
+    return jsonify(grants)
+
+@app.route('/api/grants', methods=['POST'])
+def add_grant():
+    data = request.get_json()
+    new_grant = {
+        'id': len(grants) + 1,
+        'foundation': data.get('foundation'),
+        'program': data.get('program'),
+        'amount': data.get('amount'),
+        'status': data.get('status', 'draft'),
+        'deadline': data.get('deadline'),
+        'probability': data.get('probability', 50),
+        'submitted_date': datetime.now().strftime('%Y-%m-%d')
+    }
+    grants.append(new_grant)
+    return jsonify(new_grant), 201
+
+@app.route('/api/events', methods=['GET'])
+def get_events():
+    return jsonify(events)
+
+@app.route('/api/events', methods=['POST'])
+def add_event():
+    data = request.get_json()
+    new_event = {
+        'id': len(events) + 1,
+        'name': data.get('name'),
+        'date': data.get('date'),
+        'time': data.get('time', '6:00 PM'),
+        'venue': data.get('venue'),
+        'capacity': data.get('capacity', 100),
+        'registered': 0,
+        'revenue_goal': data.get('revenue_goal', 10000),
+        'current_revenue': 0,
+        'status': 'planning'
+    }
+    events.append(new_event)
+    return jsonify(new_event), 201
+
+@app.route('/api/wealth-screenings', methods=['GET'])
+def get_wealth_screenings():
+    return jsonify(wealth_screenings)
+
+@app.route('/api/wealth-screenings', methods=['POST'])
+def add_wealth_screening():
+    data = request.get_json()
+    new_screening = {
+        'id': len(wealth_screenings) + 1,
+        'contact_name': data.get('contact_name'),
+        'estimated_capacity': data.get('estimated_capacity'),
+        'recommended_ask': data.get('recommended_ask'),
+        'confidence_level': data.get('confidence_level', 'medium'),
+        'interests': data.get('interests', []),
+        'next_steps': data.get('next_steps'),
+        'screening_date': datetime.now().strftime('%Y-%m-%d')
+    }
+    wealth_screenings.append(new_screening)
+    return jsonify(new_screening), 201
+
+# Bulk upload endpoint
+@app.route('/api/bulk-upload', methods=['POST'])
+def bulk_upload():
+    # This would handle CSV/Excel file uploads in a real application
+    return jsonify({
+        'message': 'Bulk upload functionality ready',
+        'supported_formats': ['CSV', 'Excel'],
+        'supported_types': ['contacts', 'donations', 'events']
+    })
+
+# Settings endpoint
+@app.route('/api/settings', methods=['GET'])
+def get_settings():
+    return jsonify({
+        'organization_name': 'Sample Nonprofit Organization',
+        'email_signature': 'Best regards,\nFundraising Team',
+        'default_currency': 'USD',
+        'email_notifications': True,
+        'ai_features_enabled': True
+    })
+
+@app.route('/api/settings', methods=['POST'])
+def update_settings():
+    data = request.get_json()
+    # In a real application, this would save to a database
+    return jsonify({
+        'message': 'Settings updated successfully',
+        'settings': data
     })
 
 if __name__ == '__main__':
