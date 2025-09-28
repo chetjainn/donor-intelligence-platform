@@ -265,6 +265,10 @@ wealth_screenings = [
 def index():
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return jsonify({'message': 'Flask app is working!', 'timestamp': datetime.now().isoformat()})
+
 @app.route('/api/contacts', methods=['GET', 'POST'])
 def handle_contacts():
     if request.method == 'GET':
