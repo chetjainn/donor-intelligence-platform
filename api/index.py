@@ -585,7 +585,14 @@ def update_settings():
     })
 
 # Export the Flask app for Vercel
+app.config['DEBUG'] = False
+
+# Vercel expects the app to be named 'app' or 'application'
 application = app
+
+# For Vercel serverless functions
+def handler(request):
+    return app(request.environ, request.start_response)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
